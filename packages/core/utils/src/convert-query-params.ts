@@ -235,7 +235,11 @@ const normalizeNullOperator = (filters: WhereQuery, key: string) => {
 
   if (key === '$notNull') {
     delete filters[key];
-    filters.$null = !value;
+    // Parse the value first: query strings arrive as 'true'/'false'/'1'/'0',
+    // and negating the raw string would be wrong ('false' is truthy, so
+    // !'false' is false, inverting the filter). $null is the negation of
+    // the parsed boolean, for every representation of true and false.
+    filters.$null = !parseType({ type: 'boolean', value, forceCast: true });
 
     return;
   }
