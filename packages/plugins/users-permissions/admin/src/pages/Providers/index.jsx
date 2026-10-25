@@ -137,7 +137,7 @@ export const ProvidersPage = () => {
     trackUsage('willEditAuthenticationProvider');
 
     const providersToSubmit = Object.keys(data).reduce((acc, name) => {
-      acc[name] = name === providerToEditName ? { ...values, ...data[name] } : data[name];
+      acc[name] = name === providerToEditName ? { ...data[name], ...values } : data[name];
 
       return acc;
     }, {});
