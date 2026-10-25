@@ -4,24 +4,30 @@ const BYTE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB'];
 const BYTE_UNIT_STEP = 1000;
 
 /**
- * Formats a byte value into a human-readable string with units.
+ * Formats an asset size into a human-readable string with units.
  *
- * @param receivedBytes - The number of bytes to format (as number or string)
+ * Asset sizes from the upload API are in kilobytes, so the value is converted
+ * to bytes before scaling into B / KB / MB / GB / TB.
+ *
+ * @param receivedKiloBytes - The asset size in kilobytes (as number or string)
  * @param decimals - The number of decimal places to display (default: 0)
  * @returns A formatted string with value and unit (e.g., "1.5MB")
  *
  * @example
  * ```ts
- * formatBytes(1024) // '1KB'
- * formatBytes(1536, 1) // '1.5KB'
+ * formatBytes(1024) // '1MB'
+ * formatBytes(1536, 1) // '1.5MB'
  * ```
  */
-export function formatBytes(receivedBytes: number | string, decimals = 0) {
-  const realBytes = typeof receivedBytes === 'string' ? Number(receivedBytes) : receivedBytes;
+export function formatBytes(receivedKiloBytes: number | string, decimals = 0) {
+  const realKiloBytes =
+    typeof receivedKiloBytes === 'string' ? Number(receivedKiloBytes) : receivedKiloBytes;
 
-  if (!realBytes || Number.isNaN(realBytes)) {
+  if (!realKiloBytes || Number.isNaN(realKiloBytes)) {
     return '0B';
   }
+
+  const realBytes = realKiloBytes * BYTE_UNIT_STEP;
 
   let scaled = Math.abs(realBytes);
   let unitIndex = 0;
