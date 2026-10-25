@@ -79,7 +79,10 @@ const getDocumentIdsByDraftPublishRelation = async (
       continue;
     }
 
-    const isModified = updatedAtOf(p) === latestUpdatedAt;
+    // An entry is modified exactly when its draft is newer than its published
+    // row, i.e. when the published row is NOT the latest version. Equating
+    // modified with "published is latest" inverted the two filters.
+    const isModified = updatedAtOf(p) !== latestUpdatedAt;
     if (isModified === wantModified) {
       ids.push(p.documentId as string);
     }
