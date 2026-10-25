@@ -62,13 +62,14 @@ function json(key: string, defaultValue?: object) {
 }
 
 const unwrapArrayItem = (item: string) => {
-  const isQuoted = item.startsWith('"') && item.endsWith('"');
+  const trimmed = _.trim(item);
+  const isQuoted = trimmed.startsWith('"') && trimmed.endsWith('"') && trimmed.length >= 2;
 
   if (isQuoted) {
-    return item.slice(1, -1);
+    return trimmed.slice(1, -1);
   }
 
-  return _.trim(item, ' ');
+  return trimmed;
 };
 
 function array(key: string, defaultValue: string[]): string[];
