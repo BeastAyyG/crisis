@@ -46,7 +46,24 @@ const schema = yup.object().shape({
 const PERMISSIONS_BY_TOKEN_TYPE: Record<string, Array<'push' | 'pull'> | undefined> = {
   push: ['push'],
   pull: ['pull'],
-  'pull-push': ['push', 'pull'],
+  'push-pull': ['push', 'pull'],
+};
+
+/**
+ * The select holds a single token type, while the API returns one permission
+ * per action. A full-access token therefore comes back as both actions, in
+ * either order, and must map back to the single `push-pull` select value.
+ */
+const getTokenType = (permissions: Array<string> | undefined): string => {
+  if (!permissions || permissions.length === 0) {
+    return '';
+  }
+
+  if (permissions.includes('push') && permissions.includes('pull')) {
+    return 'push-pull';
+  }
+
+  return permissions.join('-');
 };
 
 /* -------------------------------------------------------------------------------------------------
@@ -243,7 +260,7 @@ const EditView = () => {
              * in the request body incase we don't have a transferToken and instead
              * use an empty string.
              */
-            permissions: (transferToken?.permissions.join('-') ?? '') as FormValues['permissions'],
+            permissions: getTokenType(transferToken?.permissions) as FormValues['permissions'],
           } satisfies FormValues
         }
         enableReinitialize
