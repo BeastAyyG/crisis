@@ -109,8 +109,10 @@ const setIsDefault = async (locales: any) => {
   const actualDefault = await getDefaultLocale();
 
   if (Array.isArray(locales)) {
-    const localesByName = new Map(locales.map((locale) => [locale.name, locale]));
-    const defaultLocale = localesByName.get(actualDefault);
+    // The stored default is a locale code (e.g. `fr`), so the lookup must be
+    // keyed by code, not by display name (e.g. `French`), which can never match.
+    const localesByCode = new Map(locales.map((locale) => [locale.code, locale]));
+    const defaultLocale = localesByCode.get(actualDefault);
 
     return locales.map((locale) => ({
       ...locale,
