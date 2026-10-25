@@ -137,6 +137,30 @@ const PaginationButton = ({ page, children }: PaginationButtonProps) => {
 };
 
 /* -------------------------------------------------------------------------------------------------
+ * VersionsListItem
+ * -----------------------------------------------------------------------------------------------*/
+
+/**
+ * One row of the versions list, kept as its own component so the card sits only
+ * one JSX level below the list item: the event strict-lint gate caps JSX nesting
+ * depth at 2, and inlining the card under Box > Flex > li put it at depth 3.
+ */
+const VersionsListItem = ({ version, isCurrent }: VersionCardProps) => {
+  const { formatMessage } = useIntl();
+
+  return (
+    <li
+      aria-label={formatMessage({
+        id: 'content-manager.history.sidebar.title.version-card.aria-label',
+        defaultMessage: 'Version card',
+      })}
+    >
+      <VersionCard version={version} isCurrent={isCurrent} />
+    </li>
+  );
+};
+
+/* -------------------------------------------------------------------------------------------------
  * VersionsListItems
  * -----------------------------------------------------------------------------------------------*/
 
@@ -185,18 +209,11 @@ const VersionsListItems = () => {
         alignItems="stretch"
       >
         {versions.data.map((version) => (
-          <li
+          <VersionsListItem
             key={version.id}
-            aria-label={formatMessage({
-              id: 'content-manager.history.sidebar.title.version-card.aria-label',
-              defaultMessage: 'Version card',
-            })}
-          >
-            <VersionCard
-              version={version}
-              isCurrent={isFirstPage && version.id === latestVersionId}
-            />
-          </li>
+            version={version}
+            isCurrent={isFirstPage && version.id === latestVersionId}
+          />
         ))}
       </Flex>
       {versions.meta.pagination.page < versions.meta.pagination.pageCount && (
