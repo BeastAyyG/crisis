@@ -151,7 +151,6 @@ export const listHandler = (
   listType: string
 ) => {
   const doc = editor.current.getDoc();
-  const insertion = getListItemMarker(listType, 1);
 
   if (doc.somethingSelected()) {
     const selections = doc.listSelections();
@@ -170,12 +169,17 @@ export const listHandler = (
 
         for (let i = pos[0]; i <= pos[1]; i++) {
           if (remove) {
-            // Don't remove if the line doesn't start with a bullet point or a number
-            if (doc.getLine(i).match(regexIsItemFromList) !== null) {
-              doc.replaceRange('', { line: i, ch: 0 }, { line: i, ch: insertion.length });
+            // Don't remove if the line doesn't start with a bullet point or a number.
+            // Remove the whole matched prefix, not a fixed length, so multi-digit
+            // numbers such as "10. " are removed cleanly.
+            const listPrefix = doc.getLine(i).match(regexIsItemFromList);
+
+            if (listPrefix !== null) {
+              doc.replaceRange('', { line: i, ch: 0 }, { line: i, ch: listPrefix[0].length });
             }
           } else {
-            const positionInList = i - pos[0];
+            // Numbered lists are 1-based: the first selected line is item 1.
+            const positionInList = i - pos[0] + 1;
 
             doc.replaceRange(getListItemMarker(listType, positionInList), { line: i, ch: 0 });
           }
