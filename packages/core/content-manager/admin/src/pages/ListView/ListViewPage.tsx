@@ -86,7 +86,7 @@ const clampPageToRange = (page: number, total: number, pageSize: number) => {
 
   const pageCount = Math.ceil(total / pageSize);
 
-  return pageCount > 0 ? Math.min(page, pageCount) : page;
+  return pageCount > 0 ? Math.min(Math.max(page, 1), pageCount) : page;
 };
 
 /* -------------------------------------------------------------------------------------------------
@@ -364,7 +364,7 @@ const ListViewPage = () => {
   const { results = [], pagination } = data ?? {};
 
   React.useEffect(() => {
-    if (!pagination || isFetching || results.length === 0) {
+    if (!pagination || isFetching) {
       return;
     }
 
@@ -384,7 +384,7 @@ const ListViewPage = () => {
       },
       { replace: true }
     );
-  }, [isFetching, navigate, pagination, query, results.length]);
+  }, [isFetching, navigate, pagination, query]);
 
   const { canCreate, isLoadingActionsRBAC } = useDocumentRBAC(
     'ListViewPage',
