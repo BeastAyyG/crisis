@@ -33,7 +33,7 @@ const SubCategory = ({ subCategory }) => {
     return {
       isEmpty: actions.length === 0,
       hasEnabledActions: enabledActions.length > 0,
-      isFullySelected: enabledActions.length > 0 && actions.length >= enabledActions.length,
+      isFullySelected: enabledActions.length > 0 && enabledActions.length === actions.length,
     };
   }, [currentScopedModifiedData]);
 
