@@ -38,10 +38,12 @@ const createOrUpdateDocument = async (ctx: any, opts?: OptionsWithPopulate) => {
   const documentManager = getService('document-manager');
   const permissionChecker = getService('permission-checker').create({ userAbility, model });
 
-  if (permissionChecker.cannot.create()) {
-    throw new errors.ForbiddenError();
-  }
-
+  // No blanket create gate here: whether create or update permission is
+  // required depends on whether the document (or locale version) already
+  // exists, which is only known after loading it below. The canWriteVersion
+  // check enforces create for a new version and update for an existing one,
+  // so a role with Update but not Create can still save an existing
+  // single type, and a role with neither is still forbidden.
   const sanitizedQuery = await permissionChecker.sanitizedQuery.update(query);
 
   const { locale } = await getDocumentLocaleAndStatus(body, model);
