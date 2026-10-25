@@ -42,11 +42,14 @@ export const updateLastUsedAt = async (apiToken: {
   const lastUsedAt = apiToken.lastUsedAt != null ? parseISO(apiToken.lastUsedAt) : null;
 
   // The timestamp is refreshed at most once an hour: the next write falls due
-  // an hour from this request, so a timestamp sitting before it still belongs
-  // to the window that is running.
-  const refreshDueAt = addHours(currentDate, LAST_USED_REFRESH_INTERVAL_IN_HOURS);
+  // an hour after the last recorded use, so a timestamp older than that is
+  // due for a refresh and a newer one is still inside its window.
+  const refreshDueAt =
+    lastUsedAt === null
+      ? null
+      : addHours(lastUsedAt, LAST_USED_REFRESH_INTERVAL_IN_HOURS);
 
-  if (lastUsedAt !== null && isBefore(lastUsedAt, refreshDueAt)) {
+  if (refreshDueAt !== null && isBefore(currentDate, refreshDueAt)) {
     return;
   }
 
