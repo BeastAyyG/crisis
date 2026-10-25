@@ -194,8 +194,8 @@ const WebhookForm = ({
 const NAME_REGEX = /(^$)|(^[A-Za-z][_0-9A-Za-z ]*$)/;
 
 const URL_PATTERNS: Record<string, RegExp> = {
-  'http:': /^http:\/\/.*$/,
-  https: /^https:\/\/.*$/,
+  http: /^http:\/\/.*$/i,
+  https: /^https:\/\/.*$/i,
 };
 
 const getUrlProtocol = (url: string) => url.slice(0, url.indexOf('://')).toLowerCase();
