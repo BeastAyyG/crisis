@@ -83,18 +83,20 @@ export const reducer = (state: InitialState, action: Action) =>
       }
       case 'SELECT_ALL_IN_PERMISSION': {
         const actionIds = action.value.map((item) => item.actionId);
-        const selectedInPermission = actionIds.filter((actionId) =>
-          draftState.selectedActions.includes(actionId)
-        );
+        const allSelected =
+          actionIds.length > 0 &&
+          actionIds.every((actionId) => draftState.selectedActions.includes(actionId));
 
-        if (selectedInPermission.length) {
-          pull(draftState.selectedActions, ...selectedInPermission);
+        if (allSelected) {
+          pull(draftState.selectedActions, ...actionIds);
 
           break;
         }
 
         actionIds.forEach((actionId) => {
-          draftState.selectedActions.push(actionId);
+          if (!draftState.selectedActions.includes(actionId)) {
+            draftState.selectedActions.push(actionId);
+          }
         });
 
         break;
