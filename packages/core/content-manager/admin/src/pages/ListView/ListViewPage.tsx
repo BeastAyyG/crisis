@@ -764,21 +764,22 @@ const ActionsCell = styled(Table.Cell)`
 
 const TableActionsBar = () => {
   const selectRow = useTable('TableActionsBar', (state) => state.selectRow);
-  const rows = useTable('TableActionsBar', (state) => state.rows) as Document[];
   const selectedRows = useTable('TableActionsBar', (state) => state.selectedRows) as Document[];
   const [{ query }] = useQueryParams<{ plugins: { i18n: { locale: string } } }>();
   const locale = query?.plugins?.i18n?.locale;
   const prevLocale = usePrev(locale);
 
   React.useEffect(() => {
-    if (prevLocale === locale) {
+    if (prevLocale === undefined || prevLocale === locale || selectedRows.length === 0) {
       return;
     }
 
-    const availableDocumentIds = new Set(rows.map((row) => row.documentId));
-
-    selectRow(selectedRows.filter((row) => availableDocumentIds.has(row.documentId)));
-  }, [selectRow, prevLocale, locale, rows, selectedRows]);
+    // A document keeps the same documentId across locales while each locale
+    // version has its own entry id, so filtering by documentId would keep a
+    // selection made under the previous locale. Drop it outright instead,
+    // matching the reset that happens when the content type changes.
+    selectRow([]);
+  }, [selectRow, prevLocale, locale, selectedRows]);
 
   return (
     <Table.ActionBar>
