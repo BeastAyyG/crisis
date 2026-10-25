@@ -45,7 +45,7 @@ const resolveInsertIndex = (index: number, position: AddComponentPosition, total
     return index;
   }
 
-  return Math.min(index, Math.max(totalLength - 1, 0));
+  return Math.min(index + 1, Math.max(totalLength, 0));
 };
 
 interface DynamicComponentProps
