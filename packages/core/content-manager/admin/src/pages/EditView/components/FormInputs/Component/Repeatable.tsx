@@ -150,9 +150,7 @@ const RepeatableComponent = ({
    * `max` is optional on the attribute, so normalise it before working out whether there is
    * room left for another entry.
    */
-  const lastAllowedIndex = Number.isFinite(max) ? max - 1 : Number.MAX_SAFE_INTEGER;
-  const nextEntryIndex = value.length - 1;
-  const canAddEntry = nextEntryIndex <= lastAllowedIndex;
+  const canAddEntry = value.length < max;
 
   const handleClick = () => {
     if (canAddEntry) {
