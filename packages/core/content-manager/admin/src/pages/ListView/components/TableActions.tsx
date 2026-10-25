@@ -193,12 +193,12 @@ const CloneAction: DocumentActionComponent = ({ model, documentId }) => {
     }
 
     navigate({
-      pathname: documentId,
+      pathname: clonedDocumentId,
       search: stringify({
         plugins: query.plugins,
       }),
     });
-  }, [clonedDocumentId, documentId, navigate, query.plugins]);
+  }, [clonedDocumentId, navigate, query.plugins]);
 
   return {
     disabled: !canCreate,
