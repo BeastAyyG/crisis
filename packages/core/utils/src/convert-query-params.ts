@@ -224,25 +224,6 @@ const convertOrderingQueryParams = (ordering: unknown) => {
 const isStringArray = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every(isString);
 
-const NULL_OPERATORS = ['$null', '$notNull'];
-
-/**
- * `$notNull` is expressed as the negation of `$null`, so the query layer only has a
- * single null operator to deal with.
- */
-const normalizeNullOperator = (filters: WhereQuery, key: string) => {
-  const value = filters[key];
-
-  if (key === '$notNull') {
-    delete filters[key];
-    filters.$null = !value;
-
-    return;
-  }
-
-  filters[key] = parseType({ type: 'boolean', value, forceCast: true });
-};
-
 interface TransformerOptions {
   getModel: (uid: string) => Model | undefined;
 }
@@ -783,8 +764,8 @@ const createTransformer = ({ getModel }: TransformerOptions) => {
       }
 
       // Handle operators
-      else if (NULL_OPERATORS.includes(key)) {
-        normalizeNullOperator(filters as WhereQuery, key);
+      else if (['$null', '$notNull'].includes(key)) {
+        filters[key] = parseType({ type: 'boolean', value: filters[key], forceCast: true });
       } else if (isObject(value)) {
         filters[key] = convertAndSanitizeFilters(value, schema);
       }

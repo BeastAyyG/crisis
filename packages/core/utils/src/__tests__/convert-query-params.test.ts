@@ -74,6 +74,24 @@ describe('convert-query-params', () => {
       expect(res).toEqual(expectedOutput);
     });
 
+    // $notNull keeps its key with a parsed boolean (issue #59: rewriting it to
+    // $null with a negated raw string inverted $notNull=false results)
+    test.each<[string, object, object]>([
+      ['$notNull string false', { title: { $notNull: 'false' } }, { title: { $notNull: false } }],
+      ['$notNull string 0', { title: { $notNull: '0' } }, { title: { $notNull: false } }],
+      ['$notNull string true', { title: { $notNull: 'true' } }, { title: { $notNull: true } }],
+      ['$notNull boolean false', { title: { $notNull: false } }, { title: { $notNull: false } }],
+      ['$null string true', { title: { $null: 'true' } }, { title: { $null: true } }],
+      [
+        'combined $null and $notNull are both kept',
+        { title: { $null: false, $notNull: false } },
+        { title: { $null: false, $notNull: false } },
+      ],
+    ])('parses null operators: %s', (_key, input, expectedOutput) => {
+      const res = transformer.private_convertFiltersQueryParams(input, models['api::dog.dog']);
+      expect(res).toEqual(expectedOutput);
+    });
+
     // test filters that should be removed
     test.each<[string, object]>([
       ['invalid attribute', { invAttribute: 'test' }],
