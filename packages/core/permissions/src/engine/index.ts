@@ -164,18 +164,16 @@ const newEngine = (params: EngineParams): Engine => {
       return register({ action, subject, properties });
     }
 
-    // The ability holds one rule per permission, so the queries the conditions
-    // resolved to are collected into a single clause.
-    const query = results.reduce<Record<string, unknown>>(
-      (clause, result) => _.merge(clause, result),
-      {}
-    );
-
+    // Multiple conditions on one permission widen access: an entry may
+    // satisfy any one of them, so their queries are combined with $or.
+    // Merging them into a single query would instead require an entry to
+    // satisfy every condition at once, which is the opposite of the
+    // intended semantics.
     return register({
       action,
       subject,
       properties,
-      condition: { $and: [query] },
+      condition: { $or: results },
     });
   };
 
