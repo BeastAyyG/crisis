@@ -11,6 +11,13 @@ const mapErrorsAndStatus = [
     status: 403,
   },
   {
+    // PolicyError is a ForbiddenError subclass, but the status lookup is by
+    // error name, not by inheritance, so without its own entry a policy
+    // refusal fell through to the 400 default instead of 403.
+    classError: errors.PolicyError,
+    status: 403,
+  },
+  {
     classError: errors.NotFoundError,
     status: 404,
   },
