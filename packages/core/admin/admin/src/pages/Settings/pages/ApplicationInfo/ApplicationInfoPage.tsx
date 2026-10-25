@@ -23,7 +23,7 @@ import { DIMENSION, SIZE } from './utils/constants';
  * -----------------------------------------------------------------------------------------------*/
 
 const LOGO_FIELDS = ['menu', 'auth'] as const;
-const PROJECT_SETTINGS_FIELDS = ['authLogo', 'menuLogo'] as const;
+const PROJECT_SETTINGS_FIELDS = ['menuLogo', 'authLogo'] as const;
 
 const ApplicationInfoPage = () => {
   const { trackUsage } = useTracking();
