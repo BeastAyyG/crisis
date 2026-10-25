@@ -64,8 +64,8 @@ const getSelectedUserIds = (
 
       Object.entries(operand)
         .filter(([operator]) => USER_SELECTION_OPERATORS.includes(operator))
-        .forEach(([, value]) => {
-          const ids = Array.isArray(value) ? value : [value];
+        .forEach(([, operatorValue]) => {
+          const ids = Array.isArray(operatorValue) ? operatorValue : [operatorValue];
 
           ids.forEach((id) => {
             if (id) {
