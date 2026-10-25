@@ -76,7 +76,7 @@ const Table = ({
   const sortedTokens = React.useMemo(() => {
     const tokensByName = [...tokens].sort((a, b) => formatter.compare(a.name, b.name));
 
-    return isDescending ? tokensByName : tokensByName.reverse();
+    return isDescending ? tokensByName.reverse() : tokensByName;
   }, [tokens, formatter, isDescending]);
 
   const { canDelete, canUpdate, canRead } = permissions;
