@@ -1702,7 +1702,7 @@ const UnpublishAction: DocumentActionComponent = ({
                 documentId,
                 params,
               },
-              draftOption === UNPUBLISH_DRAFT_OPTIONS.KEEP
+              draftOption === UNPUBLISH_DRAFT_OPTIONS.DISCARD
             );
           },
         }
