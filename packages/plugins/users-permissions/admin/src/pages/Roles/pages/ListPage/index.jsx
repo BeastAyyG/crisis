@@ -144,7 +144,7 @@ export const RolesListPage = () => {
 
     const searchableValues = [role.name, role.description].filter(Boolean);
 
-    return searchableValues.length > 0 && searchableValues.every((value) => contains(value, _q));
+    return searchableValues.length > 0 && searchableValues.some((value) => contains(value, _q));
   };
 
   const sortedRoles = (roles || [])
