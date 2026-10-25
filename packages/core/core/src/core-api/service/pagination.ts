@@ -46,9 +46,10 @@ const getPaginationMode = (pagination?: PaginationParams): PaginationMode => {
     return 'offset';
   }
 
-  const keys = Object.keys(pagination ?? {});
-
-  return keys.includes('page') || keys.includes('pageSize') ? 'page' : 'offset';
+  // Page pagination is the default: a request that names no pagination
+  // parameter at all (or only withCount) must report page/pageSize/pageCount,
+  // not start/limit. Only an explicit start/limit opts into offset mode.
+  return 'page';
 };
 
 const isPagedPagination = (pagination?: PaginationParams): pagination is PagedPagination =>
