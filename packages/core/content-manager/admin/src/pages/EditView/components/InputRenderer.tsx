@@ -395,7 +395,9 @@ const useFieldHint = (
  */
 const getDisplayedBounds = (attribute: Schema.Attribute.AnyAttribute) => {
   const { maximum, minimum } = getMinMax(attribute);
-  const bounds = [minimum, maximum].filter((bound) => Boolean(bound));
+  const bounds = [minimum, maximum].filter(
+    (bound) => bound !== undefined && bound !== null && !Number.isNaN(bound)
+  );
 
   return { maximum, minimum, boundCount: bounds.length };
 };
