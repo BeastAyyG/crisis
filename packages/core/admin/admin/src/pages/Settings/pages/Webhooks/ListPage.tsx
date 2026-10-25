@@ -161,19 +161,21 @@ const ListPage = () => {
 
   const updateSelection = (selected: boolean, ids: string[]) =>
     setWebhooksToDelete((prev) => {
-      if (!selected) {
-        return ids;
+      if (selected) {
+        const nextSelection = new Set(prev);
+
+        ids.forEach((id) => nextSelection.add(id));
+
+        return [...nextSelection];
       }
 
-      const nextSelection = new Set(prev);
+      const idsToRemove = new Set(ids);
 
-      ids.forEach((id) => nextSelection.add(id));
-
-      return [...nextSelection];
+      return prev.filter((id) => !idsToRemove.has(id));
     });
 
   const selectAllCheckbox = (selected: boolean) =>
-    updateSelection(selected, selected ? (webhooks?.map((webhook) => webhook.id) ?? []) : []);
+    updateSelection(selected, webhooks?.map((webhook) => webhook.id) ?? []);
 
   const selectOneCheckbox = (selected: boolean, id: string) => updateSelection(selected, [id]);
 
