@@ -542,7 +542,9 @@ const createQueryBuilder = (
 
       // The search term is matched against the columns the query reads, so it
       // only has something to compare against once a selection is in place.
-      return state.type === 'select' && state.select.length > 0;
+      // A count query also reads those columns (its init selects them) and
+      // must count only the matching rows, not the whole collection.
+      return (state.type === 'select' || state.type === 'count') && state.select.length > 0;
     },
 
     shouldUseDeepSort() {
