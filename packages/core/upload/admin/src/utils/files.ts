@@ -4,16 +4,17 @@ const BYTE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB'];
 const BYTE_UNIT_STEP = 1000;
 
 /**
- * Formats a byte value into a human-readable string with units.
+ * Formats a file size into a human-readable string with units. File sizes are
+ * stored in kilobytes, so the value is converted to bytes first.
  *
- * @param receivedBytes - The number of bytes to format (as number or string)
+ * @param receivedBytes - The size to format, in kilobytes (as number or string)
  * @param decimals - The number of decimal places to display (default: 0)
  * @returns A formatted string with value and unit (e.g., "1.5MB")
  *
  * @example
  * ```ts
- * formatBytes(1024) // '1KB'
- * formatBytes(1536, 1) // '1.5KB'
+ * formatBytes(1024) // '1MB'
+ * formatBytes(1536, 1) // '1.5MB'
  * ```
  */
 export function formatBytes(receivedBytes: number | string, decimals = 0) {
@@ -23,7 +24,7 @@ export function formatBytes(receivedBytes: number | string, decimals = 0) {
     return '0B';
   }
 
-  let scaled = Math.abs(realBytes);
+  let scaled = Math.abs(realBytes) * BYTE_UNIT_STEP;
   let unitIndex = 0;
 
   while (scaled >= BYTE_UNIT_STEP && unitIndex < BYTE_UNITS.length - 1) {
