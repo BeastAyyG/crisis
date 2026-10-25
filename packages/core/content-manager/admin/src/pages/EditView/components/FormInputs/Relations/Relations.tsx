@@ -111,30 +111,21 @@ function useHandleDisconnect(fieldName: string, consumerName: string) {
  * RelationsField
  * -----------------------------------------------------------------------------------------------*/
 
-type PendingRelation = Partial<Relation> & Pick<Relation, 'id'>;
-
 /**
- * The search endpoint only knows about what has been persisted: it leaves out the entries that
- * are already related to the document and knows nothing about the changes queued in the form.
- * Entries the server already holds are omitted from the results, the ones it does not know
- * about yet have to be asked for explicitly so they can be offered again.
+ * The search endpoint only knows about what has been persisted: it excludes the entries
+ * already related to the document and knows nothing about the changes queued in the form,
+ * so the queued changes must adjust that view to match the current, unsaved field value.
+ * Entries queued for removal are still saved, so they must be asked for explicitly
+ * (idsToInclude) to be offered again. Entries queued for addition are not saved yet, so
+ * they must be omitted explicitly (idsToOmit) or the dropdown would offer them again.
+ * Deriving both lists from the connect/disconnect arrays, rather than from a temporary
+ * flag, keeps the dropdown correct for every cycle: an entry in both lists (removed and
+ * then re-added) stays omitted by the server, because it is currently selected.
  */
-const getPendingRelationIds = (field?: RelationsFormValue) => {
-  const pending: PendingRelation[] = [...(field?.connect ?? []), ...(field?.disconnect ?? [])];
-
-  return pending.reduce<{ idsToInclude: string[]; idsToOmit: string[] }>(
-    (acc, relation) => {
-      if (relation.apiData?.isTemporary) {
-        acc.idsToInclude.push(relation.id.toString());
-      } else {
-        acc.idsToOmit.push(relation.id.toString());
-      }
-
-      return acc;
-    },
-    { idsToInclude: [], idsToOmit: [] }
-  );
-};
+const getPendingRelationIds = (field?: RelationsFormValue) => ({
+  idsToInclude: (field?.disconnect ?? []).map((relation) => relation.id.toString()),
+  idsToOmit: (field?.connect ?? []).map((relation) => relation.id.toString()),
+});
 
 const RELATIONS_TO_DISPLAY = 5;
 const ONE_WAY_RELATIONS = new Set([
