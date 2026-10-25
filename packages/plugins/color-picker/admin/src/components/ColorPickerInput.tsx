@@ -84,7 +84,7 @@ type ColorPickerInputProps = InputProps & {
 const getToggleState = (disabled?: boolean, value?: string | null) => {
   const hasColor = value !== undefined && value !== null && value !== '';
 
-  return { hasColor, isToggleDisabled: Boolean(disabled) && !hasColor };
+  return { hasColor, isToggleDisabled: Boolean(disabled) };
 };
 
 export const ColorPickerInput = React.forwardRef<HTMLButtonElement, ColorPickerInputProps>(
