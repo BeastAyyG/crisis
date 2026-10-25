@@ -304,7 +304,11 @@ const ActionRow = ({
                       },
                       { label: `${name} ${label}` }
                     )}
-                    checked={hasSomeActionsSelected ? 'indeterminate' : hasAllActionsSelected}
+                    checked={
+                      hasSomeActionsSelected && !hasAllActionsSelected
+                        ? 'indeterminate'
+                        : hasAllActionsSelected
+                    }
                   />
                 </Flex>
               );
@@ -592,7 +596,9 @@ const SubActionRow = ({
                               });
                             }}
                             checked={
-                              hasSomeActionsSelected ? 'indeterminate' : hasAllActionsSelected
+                              hasSomeActionsSelected && !hasAllActionsSelected
+                                ? 'indeterminate'
+                                : hasAllActionsSelected
                             }
                           />
                         </Flex>

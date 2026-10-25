@@ -244,7 +244,11 @@ const Collapse = ({
                             },
                           });
                         }}
-                        checked={hasSomeActionsSelected ? 'indeterminate' : hasAllActionsSelected}
+                        checked={
+                          hasSomeActionsSelected && !hasAllActionsSelected
+                            ? 'indeterminate'
+                            : hasAllActionsSelected
+                        }
                       />
                     </Box>
                   </Cell>

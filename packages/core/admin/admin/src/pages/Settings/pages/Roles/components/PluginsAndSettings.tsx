@@ -224,7 +224,11 @@ const SubCategory = ({
                   },
                 });
               }}
-              checked={hasSomeActionsSelected ? 'indeterminate' : hasAllActionsSelected}
+              checked={
+                hasSomeActionsSelected && !hasAllActionsSelected
+                  ? 'indeterminate'
+                  : hasAllActionsSelected
+              }
             >
               {formatMessage({ id: 'app.utils.select-all', defaultMessage: 'Select all' })}
             </Checkbox>

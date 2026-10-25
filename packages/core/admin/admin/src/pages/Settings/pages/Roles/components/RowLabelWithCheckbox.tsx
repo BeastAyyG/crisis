@@ -77,7 +77,7 @@ const RowLabelWithCheckbox = ({
               },
             })
           }
-          checked={someChecked ? 'indeterminate' : value}
+          checked={someChecked && !value ? 'indeterminate' : value}
         />
       </Box>
       <CollapseLabel {...collapseLabelProps}>

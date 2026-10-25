@@ -17,13 +17,15 @@ const getCheckboxState = (dataObj: RecursiveRecordOfBooleans): CheckboxState => 
     return { hasAllActionsSelected: false, hasSomeActionsSelected: false };
   }
 
-  return arrayOfValues.reduce<CheckboxState>(
-    (state, value) => ({
-      hasAllActionsSelected: state.hasAllActionsSelected && Boolean(value),
-      hasSomeActionsSelected: state.hasSomeActionsSelected || Boolean(value),
-    }),
-    { hasAllActionsSelected: true, hasSomeActionsSelected: false }
-  );
+  const hasAllActionsSelected = arrayOfValues.every((value) => Boolean(value));
+  const hasAnyActionSelected = arrayOfValues.some((value) => Boolean(value));
+
+  return {
+    hasAllActionsSelected,
+    // Indeterminate means some but not all: a fully selected row must not
+    // report itself as partially selected.
+    hasSomeActionsSelected: hasAnyActionSelected && !hasAllActionsSelected,
+  };
 };
 
 export { getCheckboxState };

@@ -113,7 +113,8 @@ const GlobalActions = ({ actions = EMPTY_ACTIONS, isFormDisabled, kind }: Global
                   }
                 )}
                 checked={
-                  get(checkboxesState, [actionId, 'hasSomeActionsSelected'], false)
+                  get(checkboxesState, [actionId, 'hasSomeActionsSelected'], false) &&
+                  !get(checkboxesState, [actionId, 'hasAllActionsSelected'], false)
                     ? 'indeterminate'
                     : get(checkboxesState, [actionId, 'hasAllActionsSelected'], false)
                 }
