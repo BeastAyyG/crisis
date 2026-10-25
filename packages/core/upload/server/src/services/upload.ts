@@ -273,9 +273,14 @@ export default ({ strapi }: { strapi: Core.Strapi }) => {
 
       const fileBatches = _.chunk(fileArray, concurrentUploadSize);
 
-      for (const batch of fileBatches) {
+      // The index inside a batch restarts at zero for every batch, so the
+      // matching fileInfo entry must be offset by the batch's position in the
+      // whole file list. Without the offset, every batch (and, with the
+      // default serial batch size of 1, every file) reuses the first entry.
+      for (const [batchIndex, batch] of fileBatches.entries()) {
+        const batchOffset = batchIndex * concurrentUploadSize;
         const results = await Promise.all(
-          batch.map((file, index) => doUpload(file, fileInfoArray[index] || {}))
+          batch.map((file, index) => doUpload(file, fileInfoArray[batchOffset + index] || {}))
         );
         uploadedFiles.push(...results);
       }
