@@ -489,7 +489,9 @@ const getFillLocales = (editedLocale?: string, pickedLocale?: string | null) => 
     return null;
   }
 
-  const [sourceLocale, targetLocale] = resolvedLocales;
+  // resolvedLocales is [editedLocale, pickedLocale]: the edited locale is the
+  // target being filled, and the picked locale is the source being copied from.
+  const [targetLocale, sourceLocale] = resolvedLocales;
 
   return { sourceLocale, targetLocale };
 };
