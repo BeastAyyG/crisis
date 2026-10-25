@@ -160,6 +160,10 @@ const VersionsListItems = () => {
     page: state.page,
   }));
   const latestVersionId = getLatestVersionId(versions.data);
+  // Only the first page can contain the live version. Deriving "latest" from just
+  // the current page would label the newest entry of every older page "(current)"
+  // too, so no card on an older page may carry the marker.
+  const isFirstPage = page === 1 && versions.meta.pagination.page === 1;
 
   return (
     <Box flex={1} overflow="auto">
@@ -188,7 +192,10 @@ const VersionsListItems = () => {
               defaultMessage: 'Version card',
             })}
           >
-            <VersionCard version={version} isCurrent={version.id === latestVersionId} />
+            <VersionCard
+              version={version}
+              isCurrent={isFirstPage && version.id === latestVersionId}
+            />
           </li>
         ))}
       </Flex>
@@ -276,7 +283,11 @@ const VersionsList = () => {
                 >
                   <VersionAuthor
                     version={currentVersion}
-                    isCurrent={page === 1 && versions.data.indexOf(currentVersion) === 0}
+                    isCurrent={
+                      page === 1 &&
+                      versions.meta.pagination.page === 1 &&
+                      versions.data.indexOf(currentVersion) === 0
+                    }
                   />
                 </Typography>
               </Box>
