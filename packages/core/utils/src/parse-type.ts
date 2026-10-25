@@ -16,7 +16,10 @@ const parseMilliseconds = (fraction: string): string => {
     return '0'.repeat(MILLISECONDS_DIGITS);
   }
 
-  return String(Number.parseInt(digits, 10)).padStart(MILLISECONDS_DIGITS, '0');
+  // Fractional seconds are right-padded, not left-padded: '.5' is half a
+  // second (500 ms), not 5 ms. Parsing to an integer first would also drop
+  // a leading zero ('.05' is 50 ms, not 5 ms), so pad the raw digits.
+  return digits.padEnd(MILLISECONDS_DIGITS, '0');
 };
 
 const parseTime = (value: unknown): string => {
