@@ -764,21 +764,20 @@ const ActionsCell = styled(Table.Cell)`
 
 const TableActionsBar = () => {
   const selectRow = useTable('TableActionsBar', (state) => state.selectRow);
-  const rows = useTable('TableActionsBar', (state) => state.rows) as Document[];
   const selectedRows = useTable('TableActionsBar', (state) => state.selectedRows) as Document[];
   const [{ query }] = useQueryParams<{ plugins: { i18n: { locale: string } } }>();
   const locale = query?.plugins?.i18n?.locale;
   const prevLocale = usePrev(locale);
 
   React.useEffect(() => {
-    if (prevLocale === locale) {
+    if (prevLocale === undefined || prevLocale === locale) {
       return;
     }
 
-    const availableDocumentIds = new Set(rows.map((row) => row.documentId));
-
-    selectRow(selectedRows.filter((row) => availableDocumentIds.has(row.documentId)));
-  }, [selectRow, prevLocale, locale, rows, selectedRows]);
+    if (selectedRows.length > 0) {
+      selectRow([]);
+    }
+  }, [selectRow, prevLocale, locale, selectedRows]);
 
   return (
     <Table.ActionBar>
