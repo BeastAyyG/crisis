@@ -623,9 +623,9 @@ const SettingsPage = () => {
                     <Field.Root
                       name="test-address"
                       error={
-                        formErrors.email?.id &&
+                        formErrors.to?.id &&
                         formatMessage({
-                          id: `email.${formErrors.email?.id}`,
+                          id: `email.${formErrors.to?.id}`,
                           defaultMessage: 'This is not a valid email',
                         })
                       }
