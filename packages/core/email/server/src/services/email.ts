@@ -41,8 +41,11 @@ const sendTemplatedEmail = (
       const name = prefix ? `${prefix}.${key}` : key;
 
       // Nested values are expanded so a template can read `user.firstname` as well as `user`.
+      // The prefix must be carried into the recursion, otherwise nested names
+      // collapse to their bare leaf (`firstname`) and the dotted placeholder is
+      // never recognised as an interpolation variable.
       return nested !== null && typeof nested === 'object'
-        ? [name, ...collectVariableNames(nested as Record<string, unknown>)]
+        ? [name, ...collectVariableNames(nested as Record<string, unknown>, name)]
         : [name];
     });
 
