@@ -479,13 +479,16 @@ const LIKE_WILDCARDS: Record<LikeAnchor, [string, string]> = {
  * the operator is matched.
  */
 const likeAnchorOf = (operator: Operator): LikeAnchor => {
-  const base = operator.replace(/^\$(?:not)?/, '').replace(/i$/, '');
+  const base = operator
+    .replace(/^\$(?:not)?/, '')
+    .replace(/i$/, '')
+    .toLowerCase();
 
   if (base.startsWith('starts')) {
     return 'start';
   }
 
-  if (base.startsWith('ends') || base.startsWith('contain')) {
+  if (base.startsWith('ends')) {
     return 'end';
   }
 
