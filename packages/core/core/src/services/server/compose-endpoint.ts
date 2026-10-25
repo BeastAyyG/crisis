@@ -148,13 +148,12 @@ const extractHandlerParts = (name: string) => {
   const segments = path.split('.');
   const actionName = segments.pop() ?? '';
 
-  // Single-model apis repeat the api name in the uid (`api::about.about`), so collapse
-  // the repetition back to a single segment before looking the controller up.
-  const repeated = segments.length > 1 && segments[0] === segments[1];
-  const controllerPath = repeated ? segments[0] : segments.join('.');
-
+  // The segments before the action name are the controller uid itself
+  // (`api::about.about` for `api::about.about.find`): controllers are
+  // registered under that full uid, so keep every segment, including when
+  // the api name and the controller name are the same.
   return {
-    controllerName: `${namespace}${UID_SEPARATOR}${controllerPath}`,
+    controllerName: `${namespace}${UID_SEPARATOR}${segments.join('.')}`,
     actionName,
   };
 };
@@ -171,7 +170,7 @@ const getAction = (route: Core.Route, strapi: Core.Strapi) => {
 
   const controller = getController(controllerName, { pluginName, apiName, type }, strapi);
 
-  if (typeof controller[actionName] !== 'function') {
+  if (!controller || typeof controller[actionName] !== 'function') {
     throw new Error(`Handler not found "${handler}"`);
   }
 
