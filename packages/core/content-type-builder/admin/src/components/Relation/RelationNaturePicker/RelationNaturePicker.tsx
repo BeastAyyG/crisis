@@ -70,12 +70,15 @@ export const RelationNaturePicker = ({
     : targetLabel;
   const normalizedRelationType = relationType.toLowerCase();
   const hasManySources = normalizedRelationType.startsWith('many');
-  const hasManyTargets = hasManySources && normalizedRelationType.endsWith('many');
+  const hasManyTargets = normalizedRelationType.endsWith('many');
 
-  const leftDisplayedValue = pluralize(leftTarget, hasManyTargets ? 2 : 1);
+  const leftDisplayedValue = pluralize(leftTarget, hasManySources ? 2 : 1);
   const restrictedRelations = get(contentTypes, [target, 'restrictRelationsTo'], null);
 
-  const rightDisplayedValue = pluralize(rightTarget, hasManySources ? 2 : 1);
+  const rightDisplayedValue = pluralize(
+    rightTarget,
+    hasManySources || hasManyTargets ? 2 : 1
+  );
 
   if (!relationType) {
     return null;
