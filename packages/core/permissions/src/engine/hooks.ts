@@ -61,10 +61,12 @@ interface WillRegisterContextParams {
  */
 const createWillRegisterContext = ({ permission, options }: WillRegisterContextParams) => {
   // The clauses the permission already carries. Hooks add to them, and the
-  // condition is rebuilt from the collected list on every call.
-  const clauses: unknown[] = Array.isArray(permission.condition?.$or)
-    ? [...permission.condition.$or]
-    : [];
+  // condition is rebuilt from the collected list on every call. The existing
+  // condition must be kept whole: spreading a top-level $or (or dropping a
+  // $and condition) would lose or re-combine the conditions the engine
+  // already evaluated, so an added clause must be ANDed with the whole
+  // existing condition instead of replacing it.
+  const clauses: unknown[] = permission.condition ? [permission.condition] : [];
 
   return {
     ...options,
