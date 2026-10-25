@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import { Box, Flex, IconButton, IconButtonProps, Td, Tr, Typography } from '@strapi/design-system';
 import { useIntl } from 'react-intl';
 
@@ -8,6 +10,7 @@ interface RoleRowProps extends Pick<AdminRole, 'id' | 'name' | 'description' | '
   rowIndex: number;
   canUpdate?: boolean;
   cursor?: string;
+  onRowClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const getRowAction = (icons: RoleRowProps['icons']) => {
@@ -25,9 +28,15 @@ const RoleRow = ({
   rowIndex,
   canUpdate,
   cursor,
+  onRowClick,
 }: RoleRowProps) => {
   const { formatMessage } = useIntl();
   const editObject = getRowAction(icons);
+  // The row must open the edit screen, never one of the row's action buttons:
+  // deriving the row action from the icons list picked the duplicate action
+  // whenever duplicate was listed first. An explicit row handler takes
+  // precedence; the icons fallback is kept only for direct RoleRow use.
+  const rowOnClick = onRowClick ?? editObject?.onClick;
 
   const usersCountText = formatMessage(
     {
@@ -43,7 +52,7 @@ const RoleRow = ({
       aria-rowindex={rowIndex}
       key={id}
       // @ts-expect-error – the prop uses `HTMLButtonElement` but we just specify `HTMLElement`
-      onClick={canUpdate ? editObject?.onClick : undefined}
+      onClick={canUpdate ? rowOnClick : undefined}
     >
       <Td maxWidth={`13rem`}>
         <Typography ellipsis textColor="neutral800">
