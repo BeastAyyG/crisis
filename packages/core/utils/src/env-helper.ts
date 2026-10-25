@@ -62,13 +62,28 @@ function json(key: string, defaultValue?: object) {
 }
 
 const unwrapArrayItem = (item: string) => {
-  const isQuoted = item.startsWith('"') && item.endsWith('"');
+  let result = _.trim(item);
 
-  if (isQuoted) {
-    return item.slice(1, -1);
+  // Strip matching outer quotes, repeatedly and trimming between layers,
+  // so that spacing, quote style, and nesting do not change the value:
+  //  - ' "a" ' and '"a", "b"' (space after the comma) both give 'a'
+  //  - single-quoted items ("'a'") are treated the same as double-quoted
+  //  - nested quotes ("'a'" or '" "a" "') peel off layer by layer
+  //  - an empty quoted item ('""') becomes ''
+  // Only a matching pair is stripped, so internal quotes ('a"b'), an
+  // unbalanced quote ('"a'), and apostrophe words ("'tis") are preserved.
+  while (result.length >= 2) {
+    const first = result.charAt(0);
+    const last = result.charAt(result.length - 1);
+
+    if ((first === '"' || first === "'") && first === last) {
+      result = _.trim(result.slice(1, -1));
+    } else {
+      break;
+    }
   }
 
-  return _.trim(item, ' ');
+  return result;
 };
 
 function array(key: string, defaultValue: string[]): string[];
@@ -78,7 +93,7 @@ function array(key: string, defaultValue?: string[]): string[] | undefined {
     return defaultValue;
   }
 
-  let value = getKey(key);
+  let value = _.trim(getKey(key));
 
   if (value.startsWith('[') && value.endsWith(']')) {
     value = value.substring(1, value.length - 1);
