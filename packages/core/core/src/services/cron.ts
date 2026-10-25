@@ -85,7 +85,7 @@ const toCronMonth = (month: number): number => {
     return month;
   }
 
-  return ((month % MONTHS_IN_YEAR) + MONTHS_IN_YEAR) % MONTHS_IN_YEAR;
+  return ((month % MONTHS_IN_YEAR) + MONTHS_IN_YEAR) % MONTHS_IN_YEAR + 1;
 };
 
 const monthToField = (segment: unknown): string => {
@@ -95,6 +95,16 @@ const monthToField = (segment: unknown): string => {
 
   if (Array.isArray(segment)) {
     return segment.map((item) => monthToField(item)).join(',');
+  }
+
+  if (isPlainObject(segment)) {
+    const start = segment.start ?? segment.from;
+    const end = segment.end ?? segment.to;
+    if (typeof start === 'number' && typeof end === 'number') {
+      const range = `${toCronMonth(start)}-${toCronMonth(end)}`;
+      const step = toSegmentPart(segment.step);
+      return step === null ? range : `${range}/${step}`;
+    }
   }
 
   return segmentToField(segment);
