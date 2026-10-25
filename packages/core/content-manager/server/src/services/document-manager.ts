@@ -75,7 +75,17 @@ const documentManager = ({ strapi }: { strapi: Core.Strapi }) => {
 
       // The count shares the dimensions of the page query, but none of the parameters that
       // only shape the rows we hand back (populate, sort) or the page itself.
-      const countParams = pick(params, ['locale', 'status', 'publicationFilter', 'lookup']);
+      // Filters and the search term select which rows exist, so they must be
+      // counted too; omitting them made the total and page count report the
+      // whole collection even when the table showed a single filtered row.
+      const countParams = pick(params, [
+        'locale',
+        'status',
+        'publicationFilter',
+        'lookup',
+        'filters',
+        '_q',
+      ]);
 
       const [documents, total = 0] = await Promise.all([
         strapi.documents(uid).findMany(params),
