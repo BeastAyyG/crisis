@@ -37,15 +37,15 @@ export default (auth: unknown): Visitor =>
   };
 
 /**
- * Content type a relation points to. Bidirectional relations only carry the target on
- * the side that owns the join, so the schema holding the attribute is used otherwise.
+ * Content type a relation points to. Permission must be checked against the
+ * related type, not the type holding the attribute: a bidirectional relation
+ * (inversedBy/mappedBy) still carries its target, and checking the holding
+ * schema instead would grant the related entries whenever the holding type
+ * itself is readable. Fall back to the holding schema only when no target
+ * is declared at all.
  */
 const getRelationTarget = (schema: Model, attribute: Attribute) => {
-  const { target, inversedBy, mappedBy } = attribute;
-
-  if (inversedBy != null || mappedBy != null) {
-    return schema.uid;
-  }
+  const { target } = attribute;
 
   return target ?? schema.uid;
 };
