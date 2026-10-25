@@ -36,7 +36,7 @@ const mediaRestriction = (allowedTypes: MediaKinds) => {
     (kind): kind is string => typeof kind === 'string'
   );
 
-  if (kinds.length === 0 || kinds.every((kind) => MEDIA_TYPES.includes(kind))) {
+  if (kinds.length === 0 || MEDIA_TYPES.every((kind) => kinds.includes(kind))) {
     return {};
   }
 
