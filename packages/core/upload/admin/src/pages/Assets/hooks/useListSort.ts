@@ -75,7 +75,7 @@ const toFoldersSort = (assetsSort: string, isExplicit: boolean): string => {
 
   const supportedRules = assetsSort
     .split(',')
-    .filter((rule) => FOLDER_SORTABLE_FIELDS.includes(rule));
+    .filter((rule) => FOLDER_SORTABLE_FIELDS.includes(rule.split(':')[0]));
 
   if (supportedRules.length === 0) {
     return DEFAULT_FOLDERS_SORT;
