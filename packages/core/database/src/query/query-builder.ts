@@ -117,8 +117,6 @@ export interface QueryBuilder {
 
   shouldUseDistinct(): boolean;
 
-  shouldApplySearch(): boolean;
-
   shouldUseDeepSort(): boolean;
 
   processSelect(): void;
@@ -535,16 +533,6 @@ const createQueryBuilder = (
       return state.joins.length > 0 && _.isEmpty(state.groupBy);
     },
 
-    shouldApplySearch() {
-      if (!state.search) {
-        return false;
-      }
-
-      // The search term is matched against the columns the query reads, so it
-      // only has something to compare against once a selection is in place.
-      return state.type === 'select' && state.select.length > 0;
-    },
-
     shouldUseDeepSort() {
       return (
         state.orderBy
@@ -730,7 +718,7 @@ const createQueryBuilder = (
       }
 
       // if there are joins and it is a delete or update use a sub query
-      if (this.shouldApplySearch()) {
+      if (state.search) {
         qb.where((subQb) => {
           helpers.applySearch(subQb, state.search, { qb: this, db, uid });
         });
