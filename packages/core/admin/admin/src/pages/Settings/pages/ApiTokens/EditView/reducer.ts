@@ -82,21 +82,19 @@ export const reducer = (state: InitialState, action: Action) =>
         break;
       }
       case 'SELECT_ALL_IN_PERMISSION': {
-        const actionIds = action.value.map((item) => item.actionId);
-        const selectedInPermission = actionIds.filter((actionId) =>
-          draftState.selectedActions.includes(actionId)
+        const areAllSelected = action.value.every((item) =>
+          draftState.selectedActions.includes(item.actionId)
         );
 
-        if (selectedInPermission.length) {
-          pull(draftState.selectedActions, ...selectedInPermission);
-
-          break;
+        if (areAllSelected) {
+          action.value.forEach((item) => {
+            pull(draftState.selectedActions, item.actionId);
+          });
+        } else {
+          action.value.forEach((item) => {
+            draftState.selectedActions.push(item.actionId);
+          });
         }
-
-        actionIds.forEach((actionId) => {
-          draftState.selectedActions.push(actionId);
-        });
-
         break;
       }
 

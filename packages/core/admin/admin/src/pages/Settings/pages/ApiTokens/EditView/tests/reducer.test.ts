@@ -78,6 +78,68 @@ describe('ADMIN | Pages | API TOKENS | EditView | reducer', () => {
     ]);
   });
 
+  it('should top up a partially selected permission instead of clearing it', () => {
+    const state = {
+      ...initialState,
+      selectedActions: ['api::category.category.find'],
+    };
+
+    const action = {
+      type: 'SELECT_ALL_IN_PERMISSION' as const,
+      value: [
+        { action: 'find', actionId: 'api::category.category.find' },
+        { action: 'findOne', actionId: 'api::category.category.findOne' },
+        { action: 'create', actionId: 'api::category.category.create' },
+        { action: 'update', actionId: 'api::category.category.update' },
+        { action: 'delete', actionId: 'api::category.category.delete' },
+        { action: 'createLocalization', actionId: 'api::category.category.createLocalization' },
+      ],
+    };
+
+    const selectedActions = reducer(state, action).selectedActions;
+
+    // The issue case: find already ticked, pressing the content-type checkbox
+    // must leave all six actions ticked, not clear the group.
+    [
+      'api::category.category.find',
+      'api::category.category.findOne',
+      'api::category.category.create',
+      'api::category.category.update',
+      'api::category.category.delete',
+      'api::category.category.createLocalization',
+    ].forEach((actionId) => {
+      expect(selectedActions).toContain(actionId);
+    });
+  });
+
+  it('should clear a permission when all of its actions are already selected', () => {
+    const state = {
+      ...initialState,
+      selectedActions: [
+        'api::category.category.find',
+        'api::category.category.findOne',
+        'api::category.category.create',
+        'api::category.category.update',
+        'api::category.category.delete',
+        'api::category.category.createLocalization',
+      ],
+    };
+
+    const action = {
+      type: 'SELECT_ALL_IN_PERMISSION' as const,
+      value: [
+        { action: 'find', actionId: 'api::category.category.find' },
+        { action: 'findOne', actionId: 'api::category.category.findOne' },
+        { action: 'create', actionId: 'api::category.category.create' },
+        { action: 'update', actionId: 'api::category.category.update' },
+        { action: 'delete', actionId: 'api::category.category.delete' },
+        { action: 'createLocalization', actionId: 'api::category.category.createLocalization' },
+      ],
+    };
+
+    expect(reducer(state, action).selectedActions).toEqual([]);
+  });
+
   it('should select all actions', () => {
     const action = {
       type: 'SELECT_ALL_ACTIONS' as const,
