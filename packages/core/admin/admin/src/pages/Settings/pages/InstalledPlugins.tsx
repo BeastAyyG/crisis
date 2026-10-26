@@ -27,7 +27,10 @@ const getPluginMessages = ({
 
   return {
     displayName: displayNameMessage,
-    description: { ...displayNameMessage, defaultMessage: description },
+    description: {
+      id: `global.plugins.${name}.description`,
+      defaultMessage: description,
+    },
   };
 };
 
