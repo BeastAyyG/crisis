@@ -27,7 +27,11 @@ export const getUsedAttributeNames = (
   attributes: Array<Attribute>,
   schemaData: SchemaData
 ): Array<string> => {
-  const editedNames = [schemaData.initialData.name, schemaData.modifiedData.name]
+  // Only the original name of the field being edited is excluded, so saving it
+  // unchanged still passes. The name currently typed in the form must stay in
+  // the used list, otherwise a new field (or a rename) duplicating an existing
+  // field would never be reported as already used.
+  const editedNames = [schemaData.initialData.name]
     .filter((name): name is string => Boolean(name))
     .map((name) => snakeCase(name));
 
