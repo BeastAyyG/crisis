@@ -23,7 +23,14 @@ import { DIMENSION, SIZE } from './utils/constants';
  * -----------------------------------------------------------------------------------------------*/
 
 const LOGO_FIELDS = ['menu', 'auth'] as const;
-const PROJECT_SETTINGS_FIELDS = ['authLogo', 'menuLogo'] as const;
+
+// Explicit logo-to-setting mapping. Pairing two arrays by index meant a single
+// ordering slip swapped the two logos on save; naming the target field per logo
+// makes that class of mistake impossible.
+const LOGO_FIELD_TO_PROJECT_SETTING = {
+  menu: 'menuLogo',
+  auth: 'authLogo',
+} as const;
 
 const ApplicationInfoPage = () => {
   const { trackUsage } = useTracking();
@@ -44,8 +51,8 @@ const ApplicationInfoPage = () => {
     e.preventDefault();
 
     const body = LOGO_FIELDS.reduce(
-      (acc, logo, index) => {
-        acc[PROJECT_SETTINGS_FIELDS[index]] = logos[logo].custom ?? null;
+      (acc, logo) => {
+        acc[LOGO_FIELD_TO_PROJECT_SETTING[logo]] = logos[logo].custom ?? null;
 
         return acc;
       },
