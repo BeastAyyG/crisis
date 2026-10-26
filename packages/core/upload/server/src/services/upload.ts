@@ -273,11 +273,16 @@ export default ({ strapi }: { strapi: Core.Strapi }) => {
 
       const fileBatches = _.chunk(fileArray, concurrentUploadSize);
 
+      // Batches are slices of the file list, so offset each index back into it to
+      // find the info that belongs to the file
+      let offset = 0;
       for (const batch of fileBatches) {
+        const batchOffset = offset;
         const results = await Promise.all(
-          batch.map((file, index) => doUpload(file, fileInfoArray[index] || {}))
+          batch.map((file, index) => doUpload(file, fileInfoArray[batchOffset + index] || {}))
         );
         uploadedFiles.push(...results);
+        offset += batch.length;
       }
     } finally {
       // delete temporary folder
