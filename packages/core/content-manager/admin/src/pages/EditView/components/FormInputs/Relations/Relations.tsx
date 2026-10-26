@@ -111,31 +111,6 @@ function useHandleDisconnect(fieldName: string, consumerName: string) {
  * RelationsField
  * -----------------------------------------------------------------------------------------------*/
 
-type PendingRelation = Partial<Relation> & Pick<Relation, 'id'>;
-
-/**
- * The search endpoint only knows about what has been persisted: it leaves out the entries that
- * are already related to the document and knows nothing about the changes queued in the form.
- * Entries the server already holds are omitted from the results, the ones it does not know
- * about yet have to be asked for explicitly so they can be offered again.
- */
-const getPendingRelationIds = (field?: RelationsFormValue) => {
-  const pending: PendingRelation[] = [...(field?.connect ?? []), ...(field?.disconnect ?? [])];
-
-  return pending.reduce<{ idsToInclude: string[]; idsToOmit: string[] }>(
-    (acc, relation) => {
-      if (relation.apiData?.isTemporary) {
-        acc.idsToInclude.push(relation.id.toString());
-      } else {
-        acc.idsToOmit.push(relation.id.toString());
-      }
-
-      return acc;
-    },
-    { idsToInclude: [], idsToOmit: [] }
-  );
-};
-
 const RELATIONS_TO_DISPLAY = 5;
 const ONE_WAY_RELATIONS = new Set([
   'oneWay',
@@ -605,8 +580,6 @@ const RelationsInput = ({
     // Return early if there is no relation to the document
     if (!isRelatedToCurrentDocument) return;
 
-    const { idsToInclude, idsToOmit } = getPendingRelationIds(field.value);
-
     searchForTrigger({
       model,
       targetField,
@@ -614,13 +587,14 @@ const RelationsInput = ({
         ...currentDocumentMeta.params,
         id: id ?? '',
         pageSize: 10,
-        idsToInclude,
-        idsToOmit,
+        idsToInclude: field.value?.disconnect?.map((rel) => rel.id.toString()) ?? [],
+        idsToOmit: field.value?.connect?.map((rel) => rel.id.toString()) ?? [],
         ...searchParamsDebounced,
       },
     });
   }, [
-    field.value,
+    field.value?.connect,
+    field.value?.disconnect,
     id,
     model,
     name,
