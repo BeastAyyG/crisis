@@ -62,13 +62,42 @@ function json(key: string, defaultValue?: object) {
 }
 
 const unwrapArrayItem = (item: string) => {
-  const isQuoted = item.startsWith('"') && item.endsWith('"');
+  let result = _.trim(item);
 
-  if (isQuoted) {
-    return item.slice(1, -1);
+  // Strip matching outer quotes layer by layer. A layer is only peeled
+  // when the content inside it is itself a quoted pair (after trimming),
+  // so whitespace inside the outermost quotes is preserved verbatim:
+  //  - ' "a" ' and '"a", "b"' (space or tab after the comma) both give 'a'
+  //  - single-quoted items ("'a'") are treated the same as double-quoted
+  //  - nested quotes ("'a'") peel off layer by layer, even with spaces
+  //    between layers (" 'a' ")
+  //  - an empty quoted item ('""') becomes ''
+  // Only a matching pair is stripped, so internal quotes ('a"b'),
+  // unbalanced quotes ('"a'), and apostrophe words ("'tis") are preserved.
+  while (result.length >= 2) {
+    const first = result.charAt(0);
+    const last = result.charAt(result.length - 1);
+
+    if ((first === '"' || first === "'") && first === last) {
+      const inner = result.slice(1, -1);
+      const trimmedInner = _.trim(inner);
+
+      if (
+        trimmedInner.length >= 2 &&
+        (trimmedInner.charAt(0) === '"' || trimmedInner.charAt(0) === "'") &&
+        trimmedInner.charAt(0) === trimmedInner.charAt(trimmedInner.length - 1)
+      ) {
+        result = trimmedInner;
+      } else {
+        result = inner;
+        break;
+      }
+    } else {
+      break;
+    }
   }
 
-  return _.trim(item, ' ');
+  return result;
 };
 
 function array(key: string, defaultValue: string[]): string[];
@@ -78,7 +107,7 @@ function array(key: string, defaultValue?: string[]): string[] | undefined {
     return defaultValue;
   }
 
-  let value = getKey(key);
+  let value = _.trim(getKey(key));
 
   if (value.startsWith('[') && value.endsWith(']')) {
     value = value.substring(1, value.length - 1);

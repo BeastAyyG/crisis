@@ -120,6 +120,46 @@ describe('Env helper', () => {
       process.env.ARRAY_VAR = '[firstValue, secondValue]';
       expect(envHelper.array('ARRAY_VAR')).toEqual(['firstValue', 'secondValue']);
     });
+
+    test('Strips quotes from quoted items after a spaced comma', () => {
+      process.env.ARRAY_VAR = '["http://alpha.test", "http://beta.test"]';
+      expect(envHelper.array('ARRAY_VAR')).toEqual(['http://alpha.test', 'http://beta.test']);
+    });
+
+    test('Strips quotes from mixed quoted and unquoted items', () => {
+      process.env.ARRAY_VAR = '["a", b, "c"]';
+      expect(envHelper.array('ARRAY_VAR')).toEqual(['a', 'b', 'c']);
+    });
+
+    test('Strips quotes from quoted items after a tabbed comma', () => {
+      process.env.ARRAY_VAR = '["a",\t"b"]';
+      expect(envHelper.array('ARRAY_VAR')).toEqual(['a', 'b']);
+    });
+
+    test('Strips single quotes from single-quoted items', () => {
+      process.env.ARRAY_VAR = "['a', 'b']";
+      expect(envHelper.array('ARRAY_VAR')).toEqual(['a', 'b']);
+    });
+
+    test('Strips nested quotes layer by layer', () => {
+      process.env.ARRAY_VAR = `["'a'"]`;
+      expect(envHelper.array('ARRAY_VAR')).toEqual(['a']);
+    });
+
+    test('Trims spaces around the whole bracketed value', () => {
+      process.env.ARRAY_VAR = ' ["a", "b"] ';
+      expect(envHelper.array('ARRAY_VAR')).toEqual(['a', 'b']);
+    });
+
+    test('Preserves internal quotes and trims unquoted items', () => {
+      process.env.ARRAY_VAR = '[ a"b ,  c  ]';
+      expect(envHelper.array('ARRAY_VAR')).toEqual(['a"b', 'c']);
+    });
+
+    test('Turns an empty quoted item into an empty string', () => {
+      process.env.ARRAY_VAR = '["", "a"]';
+      expect(envHelper.array('ARRAY_VAR')).toEqual(['', 'a']);
+    });
   });
 
   describe('env with date cast', () => {
