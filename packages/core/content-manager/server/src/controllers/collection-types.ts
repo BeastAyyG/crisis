@@ -79,7 +79,8 @@ const getDocumentIdsByDraftPublishRelation = async (
       continue;
     }
 
-    const isModified = updatedAtOf(p) === latestUpdatedAt;
+    // Modified means the draft has been saved since this version was published
+    const isModified = updatedAtOf(p) < latestUpdatedAt;
     if (isModified === wantModified) {
       ids.push(p.documentId as string);
     }
