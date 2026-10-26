@@ -32,16 +32,8 @@ const sanitizeUser = (user, ctx) => {
   return strapi.contentAPI.sanitize.output(user, userSchema, { auth });
 };
 
-const normalizeEmailIdentifier = (identifier) => {
-  const atIndex = identifier.lastIndexOf('@');
-
-  // Only the domain of an address is case insensitive.
-  if (atIndex === -1) {
-    return identifier;
-  }
-
-  return `${identifier.slice(0, atIndex)}@${identifier.slice(atIndex + 1).toLowerCase()}`;
-};
+// Emails are stored lower-cased on registration, so match them the same way.
+const normalizeEmailIdentifier = (identifier) => identifier.toLowerCase();
 
 const extractDeviceId = (requestBody) => {
   const { deviceId } = requestBody || {};
