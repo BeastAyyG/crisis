@@ -30,12 +30,10 @@ const mapErrorsAndStatus = [
 
 const DEFAULT_APPLICATION_ERROR_STATUS = 400;
 
-const statusByErrorName = new Map<string, number>(
-  mapErrorsAndStatus.map(({ classError, status }) => [classError.name, status])
-);
-
 const formatApplicationError = (error: InstanceType<typeof errors.ApplicationError>) => {
-  const status = statusByErrorName.get(error.name) ?? DEFAULT_APPLICATION_ERROR_STATUS;
+  const status =
+    mapErrorsAndStatus.find(({ classError }) => error instanceof classError)?.status ??
+    DEFAULT_APPLICATION_ERROR_STATUS;
 
   return {
     status,
